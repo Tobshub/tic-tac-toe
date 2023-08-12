@@ -153,3 +153,21 @@ func (b *Board) CheckWinner() (bool, XorO) {
 
 	return false, b.Turn
 }
+
+func (b *Board) CheckDrawState() bool {
+	for r := 0; r < board_r_and_c; r++ {
+		for c := 0; c < board_r_and_c; c++ {
+			if !b.Cells[r][c].Filled {
+				return false
+			}
+		}
+	}
+
+	has_won, _ := b.CheckWinner()
+
+	if has_won {
+		return false
+	}
+
+	return true
+}
