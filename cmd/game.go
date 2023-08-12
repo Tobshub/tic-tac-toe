@@ -46,11 +46,21 @@ func DrawGame() {
 
 func UpdateGame(textures [2]*rl.Texture2D) {
 	if !HasWon && !IsDraw {
-		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+		if BOARD.Turn == internals.X && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 			has_won, winner := BOARD.Update(rl.GetMouseX(), rl.GetMouseY())
-
-			HasWon = has_won
 			if has_won {
+				HasWon = has_won
+				GameWinner = winner
+			} else {
+				is_draw := BOARD.CheckDrawState()
+				if is_draw {
+					IsDraw = true
+				}
+			}
+		} else if BOARD.Turn == internals.O {
+			has_won, winner := BOARD.MakeMove()
+			if has_won {
+				HasWon = has_won
 				GameWinner = winner
 			} else {
 				is_draw := BOARD.CheckDrawState()

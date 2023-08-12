@@ -59,17 +59,21 @@ func (b *Board) Update(mouse_x, mouse_y int32) (bool, XorO) {
 			done := b.Cells[r][c].Update(b.Turn, float32(mouse_x), float32(mouse_y), b.CellSize)
 			if done {
 				has_won, winner := b.CheckWinner()
-				switch b.Turn {
-				case X:
-					b.Turn = O
-				case O:
-					b.Turn = X
-				}
+				b.NextTurn()
 				return has_won, winner
 			}
 		}
 	}
 	return false, b.Turn
+}
+
+func (b *Board) NextTurn() {
+	switch b.Turn {
+	case X:
+		b.Turn = O
+	case O:
+		b.Turn = X
+	}
 }
 
 func (b *Board) CheckWinner() (bool, XorO) {
@@ -170,4 +174,16 @@ func (b *Board) CheckDrawState() bool {
 	}
 
 	return true
+}
+
+func (b *Board) FilterEmptyCells() [][]int {
+	empty_cells := [][]int{}
+	for r := 0; r < board_r_and_c; r++ {
+		for c := 0; c < board_r_and_c; c++ {
+			if !b.Cells[r][c].Filled {
+				empty_cells = append(empty_cells, []int{r, c})
+			}
+		}
+	}
+	return empty_cells
 }

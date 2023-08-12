@@ -56,3 +56,10 @@ func (c *Cell) Update(turn XorO, mouse_x, mouse_y, cell_size float32) bool {
 		return false
 	}
 }
+
+func (c *Cell) AI_Update(turn XorO) {
+	if !c.Filled {
+		c.Filled = true
+		c.Value = turn
+	}
+}
