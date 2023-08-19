@@ -1,6 +1,9 @@
 package internals
 
-var AI_TURN = O
+var (
+	AI_ON   bool      = false
+	AI_TURN CellValue = O
+)
 
 const MAX_SIMUL_DEPTH = 6
 
