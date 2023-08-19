@@ -24,7 +24,7 @@ func (b *Board) BestEmptyCell() []int {
 	return []int{min_max[1], min_max[2]}
 }
 
-func (b *Board) MakeMove() (bool, CellValue) {
+func (b *Board) MakeBestMove() (bool, CellValue) {
 	empty_cell_idx := b.BestEmptyCell()
 	fmt.Println("BEST CELL", empty_cell_idx)
 	b.Cells[empty_cell_idx[0]][empty_cell_idx[1]].ForceMove(b.Turn)
@@ -33,8 +33,4 @@ func (b *Board) MakeMove() (bool, CellValue) {
 	b.NextTurn()
 
 	return has_won, winner
-}
-
-func (b *Board) MakeBestMove() (bool, CellValue) {
-	return b.MakeMove()
 }
