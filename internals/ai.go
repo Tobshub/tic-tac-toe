@@ -32,6 +32,10 @@ func (b *Board) MakeBestMove() (bool, CellValue) {
 
 	has_won, winner := b.CheckWinner()
 	b.NextTurn()
+	// if both AIs are on toggle the AI turn
+	if AI_X_ON && AI_O_ON {
+		AI_TURN = b.Turn
+	}
 
 	return has_won, winner
 }

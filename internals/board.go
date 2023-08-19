@@ -74,10 +74,6 @@ func (b *Board) NextTurn() {
 	case O:
 		b.Turn = X
 	}
-
-	if AI_X_ON && AI_O_ON {
-		AI_TURN = b.Turn
-	}
 }
 
 func (b *Board) PrevTurn() {
