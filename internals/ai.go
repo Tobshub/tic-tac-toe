@@ -4,7 +4,7 @@ import "fmt"
 
 var AI_TURN = O
 
-const MAX_SIMUL_DEPTH = 4
+const MAX_SIMUL_DEPTH = 6
 
 func (b *Board) FilterEmptyCells() [][]int {
 	empty_cells := [][]int{}
