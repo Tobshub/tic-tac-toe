@@ -1,7 +1,8 @@
 package internals
 
 var (
-	AI_ON   bool      = false
+	AI_X_ON bool      = false
+	AI_O_ON bool      = false
 	AI_TURN CellValue = O
 )
 

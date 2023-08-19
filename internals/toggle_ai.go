@@ -14,7 +14,7 @@ type CheckBox struct {
 func (c *CheckBox) Draw() {
 	font_size := int32(16)
 	line_thickness := int32(4)
-	rl.DrawText(c.Label, c.X+c.Size/2-rl.MeasureText(c.Label, font_size)/2, c.Y-font_size*2, font_size, rl.Black)
+	rl.DrawText(c.Label, c.X+c.Size/2-rl.MeasureText(c.Label, font_size)/2, c.Y-font_size-font_size/2, font_size, rl.Black)
 	rl.DrawRectangleLinesEx(
 		rl.NewRectangle(float32(c.X),
 			float32(c.Y), float32(c.Size),

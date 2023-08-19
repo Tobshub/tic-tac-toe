@@ -13,15 +13,39 @@ var (
 	GameWinner internals.CellValue
 )
 
-var ToggleAIButton internals.CheckBox = internals.CheckBox{
-	Label:     "Toggle AI",
+var ToggleAIasXButton internals.CheckBox = internals.CheckBox{
+	Label:     "Toggle X AI",
+	IsChecked: false,
+	Color:     rl.Red,
+	CheckedAction: func() {
+		internals.AI_X_ON = true
+		if !internals.AI_O_ON {
+			internals.AI_TURN = internals.X
+		}
+	},
+	UncheckedAction: func() {
+		internals.AI_X_ON = false
+		if internals.AI_TURN == internals.X {
+			internals.AI_TURN = internals.O
+		}
+	},
+}
+
+var ToggleAIasOButton internals.CheckBox = internals.CheckBox{
+	Label:     "Toggle O AI",
 	IsChecked: false,
 	Color:     rl.Blue,
 	CheckedAction: func() {
-		internals.AI_ON = true
+		internals.AI_O_ON = true
+		if !internals.AI_X_ON {
+			internals.AI_TURN = internals.O
+		}
 	},
 	UncheckedAction: func() {
-		internals.AI_ON = false
+		internals.AI_O_ON = false
+		if internals.AI_TURN == internals.O {
+			internals.AI_TURN = internals.X
+		}
 	},
 }
 
@@ -36,14 +60,20 @@ func InitGame(textures [2]*rl.Texture2D) {
 	BOARD.Init(SCREEN_WIDTH, SCREEN_HEIGHT, textures)
 
 	board_right := BOARD.X + BOARD.Size
-	ToggleAIButton.Size = (SCREEN_WIDTH - int32(board_right)) / 4
-	ToggleAIButton.X = int32(board_right) + (SCREEN_WIDTH-int32(board_right))/2
-	ToggleAIButton.Y = SCREEN_HEIGHT/2 - ToggleAIButton.Size/2
+
+	ToggleAIasXButton.Size = (SCREEN_WIDTH - int32(board_right)) / 4
+	ToggleAIasXButton.X = int32(board_right) + (SCREEN_WIDTH-int32(board_right))/2
+	ToggleAIasXButton.Y = SCREEN_HEIGHT/2 - ToggleAIasXButton.Size
+
+	ToggleAIasOButton.Size = (SCREEN_WIDTH - int32(board_right)) / 4
+	ToggleAIasOButton.X = int32(board_right) + (SCREEN_WIDTH-int32(board_right))/2
+	ToggleAIasOButton.Y = SCREEN_HEIGHT/2 + ToggleAIasXButton.Size
 }
 
 func DrawGame() {
 	BOARD.Draw()
-	ToggleAIButton.Draw()
+	ToggleAIasXButton.Draw()
+	ToggleAIasOButton.Draw()
 
 	if HasWon || IsDraw {
 		var text string
@@ -75,11 +105,16 @@ func UpdateGameStatus(has_won bool, winner internals.CellValue) {
 }
 
 func UpdateGame(textures [2]*rl.Texture2D) {
+	if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+		ToggleAIasXButton.Update(rl.GetMouseX(), rl.GetMouseY())
+		ToggleAIasOButton.Update(rl.GetMouseX(), rl.GetMouseY())
+	}
+
 	if !HasWon && !IsDraw {
-		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-			ToggleAIButton.Update(rl.GetMouseX(), rl.GetMouseY())
-		}
-		if internals.AI_ON {
+		if internals.AI_X_ON && internals.AI_O_ON {
+			has_won, winner := BOARD.MakeBestMove()
+			UpdateGameStatus(has_won, winner)
+		} else if internals.AI_O_ON || internals.AI_X_ON {
 			if BOARD.Turn != internals.AI_TURN && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 				has_won, winner := BOARD.Update(rl.GetMouseX(), rl.GetMouseY())
 				UpdateGameStatus(has_won, winner)
