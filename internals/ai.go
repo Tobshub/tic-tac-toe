@@ -1,7 +1,5 @@
 package internals
 
-import "fmt"
-
 var AI_TURN = O
 
 const MAX_SIMUL_DEPTH = 6
@@ -26,7 +24,6 @@ func (b *Board) BestEmptyCell() []int {
 
 func (b *Board) MakeBestMove() (bool, CellValue) {
 	empty_cell_idx := b.BestEmptyCell()
-	fmt.Println("BEST CELL", empty_cell_idx)
 	b.Cells[empty_cell_idx[0]][empty_cell_idx[1]].ForceMove(b.Turn)
 
 	has_won, winner := b.CheckWinner()
