@@ -108,7 +108,7 @@ func EvaluateDiag2(b *Board) int {
 		col := board_r_and_c - 1 - row
 		if b.Cells[row][col].Value == AI_TURN {
 			if score > 0 {
-				score = int(math.Pow10(col))
+				score = int(math.Pow10(row))
 			} else if score < 0 {
 				return 0
 			} else {
@@ -116,7 +116,7 @@ func EvaluateDiag2(b *Board) int {
 			}
 		} else if b.Cells[row][col].Value != Empty {
 			if score < 0 {
-				score = int(math.Pow10(col)) * -1
+				score = int(math.Pow10(row)) * -1
 			} else if score > 0 {
 				return 0
 			} else {
@@ -160,7 +160,7 @@ func EvaluateCol(b *Board, col int) int {
 	for row := 0; row < board_r_and_c; row++ {
 		if b.Cells[row][col].Value == AI_TURN {
 			if score > 0 {
-				score = int(math.Pow10(col))
+				score = int(math.Pow10(row))
 			} else if score < 0 {
 				return 0
 			} else {
@@ -168,7 +168,7 @@ func EvaluateCol(b *Board, col int) int {
 			}
 		} else if b.Cells[row][col].Value != Empty {
 			if score < 0 {
-				score = int(math.Pow10(col)) * -1
+				score = int(math.Pow10(row)) * -1
 			} else if score > 0 {
 				return 0
 			} else {
