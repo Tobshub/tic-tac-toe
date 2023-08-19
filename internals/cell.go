@@ -2,18 +2,22 @@ package internals
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-type XorO int
+type CellValue int
 
 const (
-	X XorO = iota
-	O
+	X     CellValue = -1
+	Empty CellValue = 0
+	O     CellValue = 1
 )
 
 type Cell struct {
-	Filled bool
-	Value  XorO
+	Value CellValue
 
 	X, Y float32
+}
+
+func (c *Cell) IsFilled() bool {
+	return c.Value != Empty
 }
 
 func (c *Cell) Draw(cell_size float32, textures [2]*rl.Texture2D) {
@@ -24,7 +28,7 @@ func (c *Cell) Draw(cell_size float32, textures [2]*rl.Texture2D) {
 	XTex := textures[0]
 	OTex := textures[1]
 
-	if c.Filled {
+	if c.IsFilled() {
 		switch c.Value {
 		case X:
 			rl.DrawTextureRec(
@@ -44,12 +48,11 @@ func (c *Cell) Draw(cell_size float32, textures [2]*rl.Texture2D) {
 	}
 }
 
-func (c *Cell) Update(turn XorO, mouse_x, mouse_y, cell_size float32) bool {
-	if c.Filled {
+func (c *Cell) Update(turn CellValue, mouse_x, mouse_y, cell_size float32) bool {
+	if c.IsFilled() {
 		return false
 	}
 	if mouse_x >= c.X && mouse_x <= c.X+cell_size && mouse_y >= c.Y && mouse_y <= c.Y+cell_size {
-		c.Filled = true
 		c.Value = turn
 		return true
 	} else {
@@ -57,9 +60,16 @@ func (c *Cell) Update(turn XorO, mouse_x, mouse_y, cell_size float32) bool {
 	}
 }
 
-func (c *Cell) AI_Update(turn XorO) {
-	if !c.Filled {
-		c.Filled = true
+func (c *Cell) ForceMove(turn CellValue) {
+	if !c.IsFilled() {
 		c.Value = turn
+	}
+}
+
+func (c *Cell) Copy() Cell {
+	return Cell{
+		Value: c.Value,
+		X:     c.X,
+		Y:     c.Y,
 	}
 }

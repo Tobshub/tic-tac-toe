@@ -10,7 +10,7 @@ var BOARD internals.Board
 var (
 	HasWon     = false
 	IsDraw     = false
-	GameWinner internals.XorO
+	GameWinner internals.CellValue
 )
 
 const (
@@ -46,7 +46,7 @@ func DrawGame() {
 
 func UpdateGame(textures [2]*rl.Texture2D) {
 	if !HasWon && !IsDraw {
-		if BOARD.Turn == internals.X && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+		if BOARD.Turn != internals.AI_TURN && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 			has_won, winner := BOARD.Update(rl.GetMouseX(), rl.GetMouseY())
 			if has_won {
 				HasWon = has_won
@@ -57,8 +57,8 @@ func UpdateGame(textures [2]*rl.Texture2D) {
 					IsDraw = true
 				}
 			}
-		} else if BOARD.Turn == internals.O {
-			has_won, winner := BOARD.MakeMove()
+		} else if BOARD.Turn == internals.AI_TURN {
+			has_won, winner := BOARD.MakeBestMove()
 			if has_won {
 				HasWon = has_won
 				GameWinner = winner

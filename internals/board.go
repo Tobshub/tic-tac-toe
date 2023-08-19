@@ -14,7 +14,7 @@ const (
 type Board struct {
 	Cells                [board_r_and_c][board_r_and_c]Cell
 	Size, X, Y, CellSize float32
-	Turn                 XorO
+	Turn                 CellValue
 	Textures             [2]*rl.Texture2D
 }
 
@@ -35,7 +35,7 @@ func (b *Board) Init(screen_width, screen_height int32, textures [2]*rl.Texture2
 
 	for r := 0; r < board_r_and_c; r++ {
 		for c := 0; c < board_r_and_c; c++ {
-			b.Cells[r][c] = Cell{X: b.X + float32(c)*b.CellSize, Y: b.Y + float32(r)*b.CellSize, Filled: false}
+			b.Cells[r][c] = Cell{X: b.X + float32(c)*b.CellSize, Y: b.Y + float32(r)*b.CellSize, Value: Empty}
 		}
 	}
 }
@@ -53,7 +53,7 @@ func (b *Board) DrawCells() {
 	}
 }
 
-func (b *Board) Update(mouse_x, mouse_y int32) (bool, XorO) {
+func (b *Board) Update(mouse_x, mouse_y int32) (bool, CellValue) {
 	for r := 0; r < board_r_and_c; r++ {
 		for c := 0; c < board_r_and_c; c++ {
 			done := b.Cells[r][c].Update(b.Turn, float32(mouse_x), float32(mouse_y), b.CellSize)
@@ -76,13 +76,18 @@ func (b *Board) NextTurn() {
 	}
 }
 
-func (b *Board) CheckWinner() (bool, XorO) {
+func (b *Board) PrevTurn() {
+	// prev turn literally does the same as next turn
+	b.NextTurn()
+}
+
+func (b *Board) checkRowsAndCols() (bool, CellValue) {
 	for r := 0; r < board_r_and_c; r++ {
 		check_row := true
 		check_col := true
 
 		for c := 0; c < board_r_and_c; c++ {
-			if b.Cells[r][c].Filled {
+			if b.Cells[r][c].IsFilled() {
 				if c > 0 && c < board_r_and_c-1 {
 					check_row = check_row && b.Cells[r][c].Value == b.Cells[r][c-1].Value && b.Cells[r][c].Value == b.Cells[r][c+1].Value
 				} else if c == 0 {
@@ -94,7 +99,7 @@ func (b *Board) CheckWinner() (bool, XorO) {
 				check_row = false
 			}
 
-			if b.Cells[c][r].Filled {
+			if b.Cells[c][r].IsFilled() {
 				if c > 0 && c < board_r_and_c-1 {
 					check_col = check_col && b.Cells[c][r].Value == b.Cells[c-1][r].Value && b.Cells[c][r].Value == b.Cells[c+1][r].Value
 				} else if c == 0 {
@@ -113,11 +118,14 @@ func (b *Board) CheckWinner() (bool, XorO) {
 			return true, b.Cells[0][r].Value
 		}
 	}
+	return false, Empty
+}
 
+func (b *Board) checkDiagonals() (bool, CellValue) {
 	check_diag_1 := true
 
 	for r := 0; r < board_r_and_c; r++ {
-		if b.Cells[r][r].Filled {
+		if b.Cells[r][r].IsFilled() {
 			if r > 0 && r < board_r_and_c-1 {
 				check_diag_1 = check_diag_1 && b.Cells[r][r].Value == b.Cells[r-1][r-1].Value && b.Cells[r][r].Value == b.Cells[r+1][r+1].Value
 			} else if r == 0 {
@@ -138,7 +146,7 @@ func (b *Board) CheckWinner() (bool, XorO) {
 
 	for r := 0; r < board_r_and_c; r++ {
 		c := board_r_and_c - r - 1
-		if b.Cells[r][c].Filled {
+		if b.Cells[r][c].IsFilled() {
 			if r > 0 && r < board_r_and_c-1 {
 				check_diag_2 = check_diag_2 && b.Cells[r][c].Value == b.Cells[r+1][c-1].Value && b.Cells[r][r].Value == b.Cells[r-1][c+1].Value
 			} else if r == 0 {
@@ -155,13 +163,29 @@ func (b *Board) CheckWinner() (bool, XorO) {
 		return true, b.Cells[0][board_r_and_c-1].Value
 	}
 
-	return false, b.Turn
+	return false, Empty
+}
+
+func (b *Board) CheckWinner() (bool, CellValue) {
+	check_rows_and_cols, winner := b.checkRowsAndCols()
+
+	if check_rows_and_cols {
+		return true, winner
+	}
+
+	check_diags, winner := b.checkDiagonals()
+
+	if check_diags {
+		return true, winner
+	}
+
+	return false, Empty
 }
 
 func (b *Board) CheckDrawState() bool {
 	for r := 0; r < board_r_and_c; r++ {
 		for c := 0; c < board_r_and_c; c++ {
-			if !b.Cells[r][c].Filled {
+			if !b.Cells[r][c].IsFilled() {
 				return false
 			}
 		}
@@ -176,14 +200,27 @@ func (b *Board) CheckDrawState() bool {
 	return true
 }
 
-func (b *Board) FilterEmptyCells() [][]int {
-	empty_cells := [][]int{}
+func (b *Board) IsGameOver() (bool, CellValue) {
+	if b.CheckDrawState() {
+		return true, Empty
+	} else {
+		return b.CheckWinner()
+	}
+}
+
+func (b *Board) Copy() Board {
+	new_board := Board{
+		Size: b.Size, X: b.X, Y: b.Y,
+		CellSize: b.CellSize, Turn: b.Turn,
+		Textures: b.Textures,
+		Cells:    [board_r_and_c][board_r_and_c]Cell{},
+	}
+
 	for r := 0; r < board_r_and_c; r++ {
 		for c := 0; c < board_r_and_c; c++ {
-			if !b.Cells[r][c].Filled {
-				empty_cells = append(empty_cells, []int{r, c})
-			}
+			new_board.Cells[r][c] = b.Cells[r][c].Copy()
 		}
 	}
-	return empty_cells
+
+	return new_board
 }
