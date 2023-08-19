@@ -42,10 +42,10 @@ func (b *Board) Init(screen_width, screen_height int32, textures [2]*rl.Texture2
 
 func (b *Board) Draw() {
 	rl.DrawRectangleLinesEx(rl.NewRectangle(b.X, b.Y, b.Size, b.Size), 4, rl.Black)
-	b.DrawCells()
+	b.drawCells()
 }
 
-func (b *Board) DrawCells() {
+func (b *Board) drawCells() {
 	for r := 0; r < board_r_and_c; r++ {
 		for c := 0; c < board_r_and_c; c++ {
 			b.Cells[r][c].Draw(b.CellSize, b.Textures)
@@ -59,7 +59,7 @@ func (b *Board) Update(mouse_x, mouse_y int32) (bool, CellValue) {
 			done := b.Cells[r][c].Update(b.Turn, float32(mouse_x), float32(mouse_y), b.CellSize)
 			if done {
 				has_won, winner := b.CheckWinner()
-				b.NextTurn()
+				b.nextTurn()
 				return has_won, winner
 			}
 		}
@@ -67,7 +67,7 @@ func (b *Board) Update(mouse_x, mouse_y int32) (bool, CellValue) {
 	return false, b.Turn
 }
 
-func (b *Board) NextTurn() {
+func (b *Board) nextTurn() {
 	switch b.Turn {
 	case X:
 		b.Turn = O
@@ -76,9 +76,9 @@ func (b *Board) NextTurn() {
 	}
 }
 
-func (b *Board) PrevTurn() {
+func (b *Board) prevTurn() {
 	// prev turn literally does the same as next turn
-	b.NextTurn()
+	b.nextTurn()
 }
 
 func (b *Board) checkRowsAndCols() (bool, CellValue) {
@@ -87,7 +87,7 @@ func (b *Board) checkRowsAndCols() (bool, CellValue) {
 		check_col := true
 
 		for c := 0; c < board_r_and_c; c++ {
-			if b.Cells[r][c].IsFilled() {
+			if b.Cells[r][c].isFilled() {
 				if c > 0 && c < board_r_and_c-1 {
 					check_row = check_row && b.Cells[r][c].Value == b.Cells[r][c-1].Value && b.Cells[r][c].Value == b.Cells[r][c+1].Value
 				} else if c == 0 {
@@ -99,7 +99,7 @@ func (b *Board) checkRowsAndCols() (bool, CellValue) {
 				check_row = false
 			}
 
-			if b.Cells[c][r].IsFilled() {
+			if b.Cells[c][r].isFilled() {
 				if c > 0 && c < board_r_and_c-1 {
 					check_col = check_col && b.Cells[c][r].Value == b.Cells[c-1][r].Value && b.Cells[c][r].Value == b.Cells[c+1][r].Value
 				} else if c == 0 {
@@ -125,7 +125,7 @@ func (b *Board) checkDiagonals() (bool, CellValue) {
 	check_diag_1 := true
 
 	for r := 0; r < board_r_and_c; r++ {
-		if b.Cells[r][r].IsFilled() {
+		if b.Cells[r][r].isFilled() {
 			if r > 0 && r < board_r_and_c-1 {
 				check_diag_1 = check_diag_1 && b.Cells[r][r].Value == b.Cells[r-1][r-1].Value && b.Cells[r][r].Value == b.Cells[r+1][r+1].Value
 			} else if r == 0 {
@@ -146,7 +146,7 @@ func (b *Board) checkDiagonals() (bool, CellValue) {
 
 	for r := 0; r < board_r_and_c; r++ {
 		c := board_r_and_c - r - 1
-		if b.Cells[r][c].IsFilled() {
+		if b.Cells[r][c].isFilled() {
 			if r > 0 && r < board_r_and_c-1 {
 				check_diag_2 = check_diag_2 && b.Cells[r][c].Value == b.Cells[r+1][c-1].Value && b.Cells[r][r].Value == b.Cells[r-1][c+1].Value
 			} else if r == 0 {
@@ -182,10 +182,10 @@ func (b *Board) CheckWinner() (bool, CellValue) {
 	return false, Empty
 }
 
-func (b *Board) CheckDrawState() bool {
+func (b *Board) CheckIsDraw() bool {
 	for r := 0; r < board_r_and_c; r++ {
 		for c := 0; c < board_r_and_c; c++ {
-			if !b.Cells[r][c].IsFilled() {
+			if !b.Cells[r][c].isFilled() {
 				return false
 			}
 		}
@@ -201,7 +201,7 @@ func (b *Board) CheckDrawState() bool {
 }
 
 func (b *Board) IsGameOver() (bool, CellValue) {
-	if b.CheckDrawState() {
+	if b.CheckIsDraw() {
 		return true, Empty
 	} else {
 		return b.CheckWinner()
@@ -218,7 +218,7 @@ func (b *Board) Copy() Board {
 
 	for r := 0; r < board_r_and_c; r++ {
 		for c := 0; c < board_r_and_c; c++ {
-			new_board.Cells[r][c] = b.Cells[r][c].Copy()
+			new_board.Cells[r][c] = b.Cells[r][c].copy()
 		}
 	}
 

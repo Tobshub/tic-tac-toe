@@ -4,14 +4,15 @@ import (
 	"math"
 )
 
-func (b *Board) SimulCell(cell_r, cell_c int) {
-	b.Cells[cell_r][cell_c].ForceMove(b.Turn)
-	b.NextTurn()
+func (b *Board) simulCell(cell_r, cell_c int) {
+	b.Cells[cell_r][cell_c].forceMove(b.Turn)
+	b.nextTurn()
 }
 
-func (b *Board) EmptyCell(cell_r, cell_c int) {
+// revert the effects of SimulCell()
+func (b *Board) emptyCell(cell_r, cell_c int) {
 	b.Cells[cell_r][cell_c].Value = Empty
-	b.PrevTurn()
+	b.prevTurn()
 }
 
 // return {best_score, best_row, best_col}
@@ -31,29 +32,29 @@ func MinMax(b *Board, perspective CellValue, depth int) []int {
 	if depth <= 0 || game_over {
 		best_score = EvaluateBoard(b, perspective)
 	} else {
-		moves := b.FilterEmptyCells()
+		moves := b.filterEmptyCells()
 
 		if b.Turn == perspective {
 			for _, move := range moves {
-				b.SimulCell(move[0], move[1])
+				b.simulCell(move[0], move[1])
 				score := MinMax(b, perspective, depth-1)[0]
 				if score > best_score {
 					best_score = score
 					best_row = move[0]
 					best_col = move[1]
 				}
-				b.EmptyCell(move[0], move[1])
+				b.emptyCell(move[0], move[1])
 			}
 		} else if b.Turn != perspective {
 			for _, move := range moves {
-				b.SimulCell(move[0], move[1])
+				b.simulCell(move[0], move[1])
 				score := MinMax(b, perspective, depth-1)[0]
 				if score < best_score {
 					best_score = score
 					best_row = move[0]
 					best_col = move[1]
 				}
-				b.EmptyCell(move[0], move[1])
+				b.emptyCell(move[0], move[1])
 			}
 		}
 	}

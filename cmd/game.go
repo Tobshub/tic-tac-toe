@@ -19,15 +19,9 @@ var ToggleAIasXButton internals.CheckBox = internals.CheckBox{
 	Color:     rl.Red,
 	CheckedAction: func() {
 		internals.AI_X_ON = true
-		if !internals.AI_O_ON {
-			internals.AI_TURN = internals.X
-		}
 	},
 	UncheckedAction: func() {
 		internals.AI_X_ON = false
-		if internals.AI_TURN == internals.X {
-			internals.AI_TURN = internals.O
-		}
 	},
 }
 
@@ -37,15 +31,9 @@ var ToggleAIasOButton internals.CheckBox = internals.CheckBox{
 	Color:     rl.Blue,
 	CheckedAction: func() {
 		internals.AI_O_ON = true
-		if !internals.AI_X_ON {
-			internals.AI_TURN = internals.O
-		}
 	},
 	UncheckedAction: func() {
 		internals.AI_O_ON = false
-		if internals.AI_TURN == internals.O {
-			internals.AI_TURN = internals.X
-		}
 	},
 }
 
@@ -97,7 +85,7 @@ func UpdateGameStatus(has_won bool, winner internals.CellValue) {
 		HasWon = has_won
 		GameWinner = winner
 	} else {
-		is_draw := BOARD.CheckDrawState()
+		is_draw := BOARD.CheckIsDraw()
 		if is_draw {
 			IsDraw = true
 		}

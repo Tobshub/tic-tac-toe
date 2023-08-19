@@ -16,7 +16,7 @@ type Cell struct {
 	X, Y float32
 }
 
-func (c *Cell) IsFilled() bool {
+func (c *Cell) isFilled() bool {
 	return c.Value != Empty
 }
 
@@ -28,7 +28,7 @@ func (c *Cell) Draw(cell_size float32, textures [2]*rl.Texture2D) {
 	XTex := textures[0]
 	OTex := textures[1]
 
-	if c.IsFilled() {
+	if c.isFilled() {
 		switch c.Value {
 		case X:
 			rl.DrawTextureRec(
@@ -49,7 +49,7 @@ func (c *Cell) Draw(cell_size float32, textures [2]*rl.Texture2D) {
 }
 
 func (c *Cell) Update(turn CellValue, mouse_x, mouse_y, cell_size float32) bool {
-	if c.IsFilled() {
+	if c.isFilled() {
 		return false
 	}
 	if mouse_x >= c.X && mouse_x <= c.X+cell_size && mouse_y >= c.Y && mouse_y <= c.Y+cell_size {
@@ -60,13 +60,13 @@ func (c *Cell) Update(turn CellValue, mouse_x, mouse_y, cell_size float32) bool 
 	}
 }
 
-func (c *Cell) ForceMove(turn CellValue) {
-	if !c.IsFilled() {
+func (c *Cell) forceMove(turn CellValue) {
+	if !c.isFilled() {
 		c.Value = turn
 	}
 }
 
-func (c *Cell) Copy() Cell {
+func (c *Cell) copy() Cell {
 	return Cell{
 		Value: c.Value,
 		X:     c.X,

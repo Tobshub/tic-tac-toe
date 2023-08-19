@@ -7,11 +7,11 @@ var (
 
 const MAX_SIMUL_DEPTH = 6
 
-func (b *Board) FilterEmptyCells() [][]int {
+func (b *Board) filterEmptyCells() [][]int {
 	empty_cells := [][]int{}
 	for r := 0; r < board_r_and_c; r++ {
 		for c := 0; c < board_r_and_c; c++ {
-			if !b.Cells[r][c].IsFilled() {
+			if !b.Cells[r][c].isFilled() {
 				empty_cells = append(empty_cells, []int{r, c})
 			}
 		}
@@ -19,22 +19,18 @@ func (b *Board) FilterEmptyCells() [][]int {
 	return empty_cells
 }
 
-func (b *Board) BestEmptyCell() []int {
+func (b *Board) bestEmptyCell() []int {
 	simul_board := b.Copy()
 	min_max := MinMax(&simul_board, b.Turn, MAX_SIMUL_DEPTH)
 	return []int{min_max[1], min_max[2]}
 }
 
 func (b *Board) MakeBestMove() (bool, CellValue) {
-	empty_cell_idx := b.BestEmptyCell()
-	b.Cells[empty_cell_idx[0]][empty_cell_idx[1]].ForceMove(b.Turn)
+	empty_cell_idx := b.bestEmptyCell()
+	b.Cells[empty_cell_idx[0]][empty_cell_idx[1]].forceMove(b.Turn)
 
 	has_won, winner := b.CheckWinner()
-	b.NextTurn()
-	// if both AIs are on, toggle the AI turn
-	if AI_X_ON && AI_O_ON {
-		AI_TURN = b.Turn
-	}
+	b.nextTurn()
 
 	return has_won, winner
 }
