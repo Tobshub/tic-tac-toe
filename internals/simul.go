@@ -36,7 +36,7 @@ func MinMax(b *Board, depth int) []int {
 		if b.Turn == AI_TURN {
 			for _, move := range moves {
 				b.SimulCell(move[0], move[1])
-				score := MinMax(b, depth)[0]
+				score := MinMax(b, depth-1)[0]
 				if score > best_score {
 					best_score = score
 					best_row = move[0]
@@ -47,7 +47,7 @@ func MinMax(b *Board, depth int) []int {
 		} else if b.Turn != AI_TURN {
 			for _, move := range moves {
 				b.SimulCell(move[0], move[1])
-				score := MinMax(b, depth)[0]
+				score := MinMax(b, depth-1)[0]
 				if score < best_score {
 					best_score = score
 					best_row = move[0]
