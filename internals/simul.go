@@ -79,22 +79,11 @@ func EvaluateDiag1(b *Board) int {
 	score := 0
 
 	for idx := 0; idx < board_r_and_c; idx++ {
-		if b.Cells[idx][idx].Value == AI_TURN {
-			if score > 0 {
-				score = int(math.Pow10(idx))
-			} else if score < 0 {
-				return 0
-			} else {
-				score = 1
-			}
-		} else if b.Cells[idx][idx].Value != Empty {
-			if score < 0 {
-				score = int(math.Pow10(idx)) * -1
-			} else if score > 0 {
-				return 0
-			} else {
-				score = -1
-			}
+		should_continue, new_score := EvaluateCell(score, &b.Cells[idx][idx], idx)
+		if !should_continue {
+			return new_score
+		} else {
+			score = new_score
 		}
 	}
 
@@ -106,22 +95,11 @@ func EvaluateDiag2(b *Board) int {
 
 	for row := 0; row < board_r_and_c; row++ {
 		col := board_r_and_c - 1 - row
-		if b.Cells[row][col].Value == AI_TURN {
-			if score > 0 {
-				score = int(math.Pow10(row))
-			} else if score < 0 {
-				return 0
-			} else {
-				score = 1
-			}
-		} else if b.Cells[row][col].Value != Empty {
-			if score < 0 {
-				score = int(math.Pow10(row)) * -1
-			} else if score > 0 {
-				return 0
-			} else {
-				score = -1
-			}
+		should_continue, new_score := EvaluateCell(score, &b.Cells[row][col], row)
+		if !should_continue {
+			return new_score
+		} else {
+			score = new_score
 		}
 	}
 
@@ -132,22 +110,11 @@ func EvaluateRow(b *Board, row int) int {
 	score := 0
 
 	for col := 0; col < board_r_and_c; col++ {
-		if b.Cells[row][col].Value == AI_TURN {
-			if score > 0 {
-				score = int(math.Pow10(col))
-			} else if score < 0 {
-				return 0
-			} else {
-				score = 1
-			}
-		} else if b.Cells[row][col].Value != Empty {
-			if score < 0 {
-				score = int(math.Pow10(col)) * -1
-			} else if score > 0 {
-				return 0
-			} else {
-				score = -1
-			}
+		should_continue, new_score := EvaluateCell(score, &b.Cells[row][col], col)
+		if !should_continue {
+			return new_score
+		} else {
+			score = new_score
 		}
 	}
 
@@ -158,24 +125,35 @@ func EvaluateCol(b *Board, col int) int {
 	score := 0
 
 	for row := 0; row < board_r_and_c; row++ {
-		if b.Cells[row][col].Value == AI_TURN {
-			if score > 0 {
-				score = int(math.Pow10(row))
-			} else if score < 0 {
-				return 0
-			} else {
-				score = 1
-			}
-		} else if b.Cells[row][col].Value != Empty {
-			if score < 0 {
-				score = int(math.Pow10(row)) * -1
-			} else if score > 0 {
-				return 0
-			} else {
-				score = -1
-			}
+		should_continue, new_score := EvaluateCell(score, &b.Cells[row][col], row)
+		if !should_continue {
+			return new_score
+		} else {
+			score = new_score
 		}
 	}
 
 	return score
+}
+
+// returns (should_continue, score)
+func EvaluateCell(score int, cell *Cell, pow int) (bool, int) {
+	if cell.Value == AI_TURN {
+		if score > 0 {
+			return true, int(math.Pow10(pow))
+		} else if score < 0 {
+			return false, 0
+		} else {
+			return true, 1
+		}
+	} else if cell.Value != Empty {
+		if score < 0 {
+			return true, int(math.Pow10(pow)) * -1
+		} else if score > 0 {
+			return false, 0
+		} else {
+			return true, -1
+		}
+	}
+	return true, score
 }
