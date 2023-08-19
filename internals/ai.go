@@ -1,9 +1,8 @@
 package internals
 
 var (
-	AI_X_ON bool      = false
-	AI_O_ON bool      = false
-	AI_TURN CellValue = O
+	AI_X_ON bool = false
+	AI_O_ON bool = false
 )
 
 const MAX_SIMUL_DEPTH = 6
@@ -22,7 +21,7 @@ func (b *Board) FilterEmptyCells() [][]int {
 
 func (b *Board) BestEmptyCell() []int {
 	simul_board := b.Copy()
-	min_max := MinMax(&simul_board, MAX_SIMUL_DEPTH)
+	min_max := MinMax(&simul_board, b.Turn, MAX_SIMUL_DEPTH)
 	return []int{min_max[1], min_max[2]}
 }
 

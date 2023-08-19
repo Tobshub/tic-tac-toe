@@ -114,11 +114,23 @@ func UpdateGame(textures [2]*rl.Texture2D) {
 		if internals.AI_X_ON && internals.AI_O_ON {
 			has_won, winner := BOARD.MakeBestMove()
 			UpdateGameStatus(has_won, winner)
-		} else if internals.AI_O_ON || internals.AI_X_ON {
-			if BOARD.Turn != internals.AI_TURN && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-				has_won, winner := BOARD.Update(rl.GetMouseX(), rl.GetMouseY())
+		} else if internals.AI_O_ON {
+			if BOARD.Turn != internals.O {
+				if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+					has_won, winner := BOARD.Update(rl.GetMouseX(), rl.GetMouseY())
+					UpdateGameStatus(has_won, winner)
+				}
+			} else {
+				has_won, winner := BOARD.MakeBestMove()
 				UpdateGameStatus(has_won, winner)
-			} else if BOARD.Turn == internals.AI_TURN {
+			}
+		} else if internals.AI_X_ON {
+			if BOARD.Turn != internals.X {
+				if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+					has_won, winner := BOARD.Update(rl.GetMouseX(), rl.GetMouseY())
+					UpdateGameStatus(has_won, winner)
+				}
+			} else {
 				has_won, winner := BOARD.MakeBestMove()
 				UpdateGameStatus(has_won, winner)
 			}
