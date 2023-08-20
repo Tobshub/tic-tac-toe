@@ -2,6 +2,7 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/tobshub/tic-tac-toe/resources"
 )
 
 const (
@@ -13,8 +14,12 @@ func main() {
 	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Tic Tac Toe")
 
 	rl.SetTargetFPS(30)
-	XTex := rl.LoadTexture("resources/x.png")
-	OTex := rl.LoadTexture("resources/o.png")
+
+	X_PNG := rl.LoadImageFromMemory(".png", resources.X, 5998)
+	O_PNG := rl.LoadImageFromMemory(".png", resources.O, 5913)
+
+	XTex := rl.LoadTextureFromImage(X_PNG)
+	OTex := rl.LoadTextureFromImage(O_PNG)
 
 	textures := [2]*rl.Texture2D{&XTex, &OTex}
 	InitGame(textures)
@@ -28,6 +33,9 @@ func main() {
 
 		rl.EndDrawing()
 	}
+
+	rl.UnloadTexture(XTex)
+	rl.UnloadTexture(OTex)
 
 	rl.CloseWindow()
 }
