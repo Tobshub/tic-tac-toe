@@ -1,4 +1,4 @@
-## TIC TAC TOE à la AI
+## TIC TAC TOE
 
 [ai x and o.webm](https://github.com/Tobshub/tic-tac-toe/assets/108701007/404919fc-3c92-4319-afcc-a86bc31e9beb)
 
